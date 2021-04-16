@@ -42,10 +42,20 @@ client.connect(err => {
     })
   })
 
-  app.get('/showOrderHistory' , (req,res)=>{
-    orderDetails.find({email : req.query.email})
+  app.post('/showAdmin' , (req,res)=>{
+    adminCollection.find({email : req.body.email})
     .toArray((err,documents)=>{
-      res.send(documents)
+      res.send(documents.length > 0)
+    })
+  })
+
+  app.post('/showOrderHistory' , (req,res)=>{
+    adminCollection.find({email : req.body.email})
+    .toArray((err,documents)=>{
+      orderDetails.find({email : req.body.email})
+      .toArray((err , documents)=>{
+        res.send(documents)
+      })
     })
   })
 app.post('/orderData',(req,res)=>{
