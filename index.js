@@ -4,6 +4,7 @@ const cors = require('cors')
 const fs = require('fs-extra')
 const fileUpload = require('express-fileupload')
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const { static } = require('express');
 require('dotenv').config()
 const port = 5000
@@ -21,7 +22,7 @@ app.use(fileUpload())
 client.connect(err => {
   const collection = client.db("homedb").collection("renovation");
   const adminCollection = client.db("homedb").collection("admin");
-
+  const serviceCollection = client.db("homedb").collection("service");
 app.post('/setAdmin' , (req,res)=>{
   const name = req.body.name ;
   const email = req.body.email ;
@@ -36,14 +37,42 @@ app.post('/setAdmin' , (req,res)=>{
 
 adminCollection.insertOne({name, email, img : file.name})
 .then(res => {
-  console.log('saved to mongodb')
-})
-})
   
+})
+})
+app.post('/addService' , (req,res)=>{
+  const name = req.body.name ;
+  const price = req.body.price ;
+  const file = req.files.file
+  file.mv(`${__dirname}/admin/${file.name}`,err=>{
+    if(err){
+      console.log(err)
+      return res.status(500).send({msg : 'file upload failed'})
+    }
+    return res.send({name : file.name , path : `/${file.name}`})
+  })
+
+serviceCollection.insertOne({name, price, img : file.name})
+.then(res => {
+  
+})
+})
 app.get('/showAdmin',(req,res)=>{
   adminCollection.find({})
   .toArray((err, documents)=>{
     res.send(documents)
+  })
+})
+app.get('/showService',(req,res)=>{
+  serviceCollection.find({})
+  .toArray((err, documents)=>{
+    res.send(documents)
+  })
+})
+app.get('/showOneService/:id',(req,res)=>{
+  serviceCollection.find({_id : ObjectId(req.params.id)})
+  .toArray((err, documents)=>{
+    res.send(documents[0])
   })
 })
   console.log('connected to database')
