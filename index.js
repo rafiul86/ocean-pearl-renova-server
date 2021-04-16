@@ -23,6 +23,28 @@ client.connect(err => {
   const collection = client.db("homedb").collection("renovation");
   const adminCollection = client.db("homedb").collection("admin");
   const serviceCollection = client.db("homedb").collection("service");
+  const orderDetails = client.db("homedb").collection("product");
+  const reviewData = client.db("homedb").collection("review");
+  app.post('/setReview' ,(req,res)=>{
+    reviewData.insertOne(req.body)
+    .then(res=>{
+      console.log(res.insertedCount>0)
+    })
+  })
+
+  app.get('/showOrderHistory' , (req,res)=>{
+    orderDetails.find({email : req.query.email})
+    .toArray((err,documents)=>{
+      res.send(documents)
+    })
+  })
+app.post('/orderData',(req,res)=>{
+  orderDetails.insertOne(req.body)
+  .then(res =>{
+    console.log(res.insertedCount>0)
+  })
+})
+
 app.post('/setAdmin' , (req,res)=>{
   const name = req.body.name ;
   const email = req.body.email ;
