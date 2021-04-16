@@ -50,9 +50,14 @@ client.connect(err => {
   })
 
   app.post('/showOrderHistory' , (req,res)=>{
-    adminCollection.find({email : req.body.email})
-    .toArray((err,documents)=>{
-      orderDetails.find({email : req.body.email})
+    const email = req.body.email ;
+    adminCollection.find({email : email})
+    .toArray((err,admin)=>{
+      const filter = {}
+      if(admin.length ===0 ){
+        filter.email = email
+      }
+      orderDetails.find(filter)
       .toArray((err , documents)=>{
         res.send(documents)
       })
