@@ -25,6 +25,16 @@ client.connect(err => {
   const serviceCollection = client.db("homedb").collection("service");
   const orderDetails = client.db("homedb").collection("product");
   const reviewData = client.db("homedb").collection("review");
+
+  app.delete('/removeService/:id',(req,res)=>{
+    serviceCollection.deleteOne({_id : ObjectId(req.params.id)})
+  })
+  app.get('/showReview', (req,res)=>{
+    reviewData.find({})
+    .toArray((err,documents)=>{
+      res.send(documents)
+    })
+  })
   app.post('/setReview' ,(req,res)=>{
     reviewData.insertOne(req.body)
     .then(res=>{
@@ -73,6 +83,7 @@ app.post('/addService' , (req,res)=>{
     }
     return res.send({name : file.name , path : `/${file.name}`})
   })
+
 
 serviceCollection.insertOne({name, price, img : file.name})
 .then(res => {
