@@ -26,6 +26,13 @@ client.connect(err => {
   const orderDetails = client.db("homedb").collection("product");
   const reviewData = client.db("homedb").collection("review");
 
+  app.patch('/update/:id' , (req,res)=>{
+    orderDetails.updateOne({_id : ObjectId(req.params.id)},{$set :{status : req.body.status}})
+    .then(res=>{
+      console.log(res)
+    })
+  })
+
   app.delete('/removeService/:id',(req,res)=>{
     serviceCollection.deleteOne({_id : ObjectId(req.params.id)})
   })
